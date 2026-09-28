@@ -20,10 +20,30 @@ export const PLACEHOLDER = {
   checkout: "[CHECKOUT / PAYMENT PROVIDER]",
 } as const;
 
+/** Absolute origin for metadata, sitemap, and payment return URLs. Never throws. */
+function resolveSiteUrl() {
+  const candidates = [process.env.NEXT_PUBLIC_SITE_URL];
+  // Vercel sets these at build time. An empty NEXT_PUBLIC_SITE_URL must not win (`??` does not treat "").
+  if (typeof window === "undefined") {
+    candidates.push(process.env.VERCEL_PROJECT_PRODUCTION_URL, process.env.VERCEL_URL);
+  }
+  for (const raw of candidates) {
+    const value = raw?.trim();
+    if (!value) continue;
+    const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+    try {
+      return new URL(withProtocol).origin;
+    } catch {
+      continue;
+    }
+  }
+  return "http://localhost:3000";
+}
+
 export const site = {
   name: "SUPERNOVA",
   legalName: "SuperNova",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: resolveSiteUrl(),
   locale: "he_IL",
   instagram: {
     handle: "supernova.global",

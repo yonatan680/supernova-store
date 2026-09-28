@@ -1,4 +1,5 @@
 import "server-only";
+import { site } from "@/data/site";
 
 const NO_STORE = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
 
@@ -42,5 +43,5 @@ export function rateLimited(request: Request, limit = 10, windowMs = 60_000) {
 }
 
 export function absoluteUrl(path: string) {
-  return new URL(path, process.env.NEXT_PUBLIC_SITE_URL).toString();
+  return new URL(path, site.url).toString();
 }
